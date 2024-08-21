@@ -1,30 +1,41 @@
-import  { useState } from 'react';
-import { Button, TextField } from '@mui/material';
+import { useState } from 'react';
+import { AppBar, Button, Toolbar } from '@mui/material';
 import React from 'react';
+import "./styles.css";
+import DateRangePicker from '../DateRangePicker/DateRangePicker';
+import moment from 'moment';
 
 type SearchProps = {
-    getShows: (search:string)=> void;
+    getRecalls: (from_ts: string | null, to_ts: string | null) => void;
 }
 
-const Search: React.FC<SearchProps> = React.memo(({getShows}) => {
+const Search: React.FC<SearchProps> = React.memo(({ getRecalls }) => {
 
-    const [search, setSearch] = useState('');
+    const [startDate, setStartDate] = useState<Date | null>(null);
+    const [endDate, setEndDate] = useState<Date | null>(null);
 
-    const handleGetShows = () => {
-        getShows(search);
-        setSearch('');
+    const handleGetRecalls = () => {
+        const from = startDate ?  moment(startDate).format('YYYY-MM-DD HH:mm:ss') : null;
+        const to = endDate ? moment(endDate).format('YYYY-MM-DD HH:mm:ss') : null;
+        getRecalls(from,to);
     }
 
-    const handleSetValue = (e: any) => {
-        setSearch(e.target.value);
+    const handleStartDateChange = (date: Date | null) => {
+        setStartDate(date);
+    }
+
+    const handleEndDateChange = (date: Date | null) => {
+        setEndDate(date);
     }
 
     return (
-        <div style={{marginTop:20}}>
-             <TextField id="outlined-basic" variant="outlined" value={search} onChange={handleSetValue}/>
-             <Button variant="outlined" color="primary" onClick={handleGetShows} style={{ height: '56px'}}>Search</Button>
-        </div>
+        <AppBar position="static" className='searchBarContainer'>
+            <Toolbar>
+                <DateRangePicker startDate={startDate} endDate={endDate} handleStartDateChange={handleStartDateChange} handleEndDateChange={handleEndDateChange} />
+                <Button variant="outlined" color="primary" onClick={handleGetRecalls} style={{ height: '40px' }}>Run</Button>
+            </Toolbar>
+        </AppBar>
     );
- }); 
+});
 
- export default Search;
+export default Search;

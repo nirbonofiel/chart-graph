@@ -1,53 +1,38 @@
 import { useCallback, useState } from 'react';
 import './App.css';
-import { getTvShows } from './api/apiAction';
+import { fetchRecallsApi } from './api/apiAction';
 import Search from './components/Search/Search';
-import Genre from './components/Genre/Genre';
-import TvShow from './components/TvShow/TvShow';
-import { TvShowData } from './types/types';
-import ShowDetails from './components/ShowDetails/ShowDetails';
+import { RecallData } from './types/types';
 import { CircularProgress } from '@mui/material';
+import Graph from './components/Graph/Graph';
 
 
 
 function App() {
-  const [tvShows, setTvShows] = useState<TvShowData[]>();
-  const [genres, setGenres] = useState<string[]>();
-  const [tvShowsByGenres, setTvShowsByGenres] = useState<TvShowData[]>();
-  const [showDetails, setShowDetails] = useState(false);
-  const [currnetShow, setCurrentShow] = useState<TvShowData>();
+  const [recalls, setRecalls] = useState<RecallData[]>();
   const [progress,setProgress] = useState(false);
 
-  const handleShowDetails = useCallback((show: TvShowData) => {
-    setCurrentShow(show);
-    setShowDetails(true);
-  },[]);
 
 
-  const getShows = useCallback(async(search:string) => {
+  const getRecalls = useCallback(async(from_ts:string | null,to_ts:string | null) => {
     setProgress(true);
-    const result = await getTvShows(`/tvshow?q=${search}`);
-    let genresMovie: string[] = [];
+    const result = await fetchRecallsApi('recall',from_ts,to_ts);
     if(result){
       setProgress(false);
-      setTvShows(result.map((element:any) => element.show));
-      genresMovie = Array.from(new Set (result.flatMap((element:any) => element.show.genres)));
-      setGenres(genresMovie);
-      setTvShowsByGenres([]);
+      setRecalls(result);
     }
   },[]);
 
   return (
     <div className="App">
-      <Search getShows={getShows}/>
+      <Search getRecalls={getRecalls}/>
       { progress && 
         <CircularProgress style={{marginTop:50}}/>
       }
-      <Genre genres={genres} setFilteredTvShow={setTvShowsByGenres} tvShows={tvShows}/>
-      <TvShow tvShows={tvShowsByGenres} handleShowDetails={handleShowDetails}/>
-      {showDetails &&
-        <ShowDetails open={showDetails} closeModal={setShowDetails} show={currnetShow}/>
+      { recalls && 
+        <Graph recalls={recalls}/>
       }
+      
     </div>
   );
 }
