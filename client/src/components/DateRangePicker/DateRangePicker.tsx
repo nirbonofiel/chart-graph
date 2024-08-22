@@ -11,15 +11,17 @@ type DateRangePickerProps = {
 };
 
 const DateRangePicker: React.FC<DateRangePickerProps> = ({ startDate, endDate, handleStartDateChange, handleEndDateChange }) => {
-
+    const minDate = new Date('2020-01-01 00:00:00');
   return (
     <>
       <div>
         <DatePicker
           selected={startDate}
-          minDate={new Date("2020/01/01 00:00:00")}
+          startDate={minDate}
+          minDate={minDate}
           onChange={handleStartDateChange}
           selectsStart
+          openToDate={minDate}
           placeholderText="Start Date" />
       </div>
       <div>
@@ -27,9 +29,9 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ startDate, endDate, h
           selected={endDate}
           onChange={handleEndDateChange}
           selectsEnd
-          disabled={startDate ? false : true}
           startDate={startDate ? startDate : undefined}
-          minDate={startDate ? startDate : undefined}
+          minDate={startDate ? startDate : minDate}
+          openToDate={minDate}
           placeholderText="End Date" />
       </div></>
 
