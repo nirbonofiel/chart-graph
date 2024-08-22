@@ -1,6 +1,7 @@
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { RecallData } from '../../types/types';
+import moment from 'moment';
 
 type GraphProps = {
     recalls: RecallData[];
@@ -14,7 +15,7 @@ const Graph:React.FC<GraphProps> = ({recalls}) => {
         margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="date" />
+        <XAxis dataKey="date" tickFormatter={(tick) => moment(tick).format('YYYY-MM-DD')} />
         <YAxis />
         <Tooltip />
         <Legend />
